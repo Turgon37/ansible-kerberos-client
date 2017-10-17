@@ -1,5 +1,17 @@
 ---
 
+- name: Check presence of keytab
+  stat:
+    path: '{{ kerberos_client__keytab }}'
+  register: _kerberos_client__keytab_status
+  check_mode: no
+
+## Keytab deployement
+- name: Fetch new Keytab from remote KDC
+  include_tasks: deploy-keytab-from-remote-kdc.yml
+  when: not _freeipa_client__keytab_status.stat.exists and
+          kerberos_client__keytab_deploy_type == 'remote'
+
 - name: Setup krb5.conf
   template:
     src:   krb5.conf.j2

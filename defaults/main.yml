@@ -9,6 +9,11 @@ kerberos_client__keytab: /etc/krb5.keytab
 
 kerberos_client__include_dirs: []
 
+kerberos_client__keytab_deploy_type: remote
+kerberos_client__keytab_deploy_tmp_file: '/tmp/{{ inventory_hostname }}.keytab'
+#kerberos_client__keytab_deploy_remote_genkey_command
+#kerberos_client__keytab_deploy_remote_host:
+
 kerberos_client__realms: {}
 kerberos_client__defaults: {}
 # Default values pre-configured per distributions
