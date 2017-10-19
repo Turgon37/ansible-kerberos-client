@@ -2,6 +2,7 @@
 # {{ ansible_managed }}
 #
 
+includedir {{ kerberos_client__include_dir }}
 {% for dir in kerberos_client__include_dirs %}
 includedir {{ dir }}
 {% endfor %}

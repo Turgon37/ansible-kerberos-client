@@ -6,11 +6,27 @@
   register: _kerberos_client__keytab_status
   check_mode: no
 
+- name: Check presence of principal in keytab
+  shell: klist -k {{ kerberos_client__keytab }} | grep --extended-regexp '^\s*[0-9]+\s*{{ kerberos_client__keytab_principal }}'
+  register: _kerberos_client__keytab_principal_status
+  changed_when: false
+  failed_when: _kerberos_client__keytab_principal_status.rc == 2
+  check_mode: no
+
+- debug: var=_kerberos_client__keytab_principal_status
 ## Keytab deployement
 - name: Fetch new Keytab from remote KDC
   include_tasks: deploy-keytab-from-remote-kdc.yml
   when: (not _kerberos_client__keytab_status.stat.exists) and
           kerberos_client__keytab_deploy_type == 'remote'
+
+- name: Ensure default include directory exists
+  file:
+    path:  "{{ kerberos_client__include_dir }}"
+    owner: root
+    group: root
+    mode:  0755
+    state: directory
 
 - name: Setup krb5.conf
   template:
