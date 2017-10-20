@@ -31,3 +31,5 @@ kerberos_client__defaults_merged: '{{ kerberos_client__defaults_distribution|
 kerberos_client__krb_port: 88
 # Default port of Kerberos admin service on KDC
 kerberos_client__krb_admin_port: 749
+# Default port of kpasswd service
+kerberos_client__krb_kpasswd_port: 464

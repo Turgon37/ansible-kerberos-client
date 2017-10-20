@@ -27,8 +27,12 @@ includedir {{ dir }}
     admin_server = {% if value.admin_server|search(':') %}{{ value.admin_server }}{% else %}{{ value.admin_server }}:{{ kerberos_client__krb_admin_port }}{% endif %}
 {%   endif %}
 
+{%   if value.kpasswd_server is defined %}
+    kpasswd_server = {% if value.kpasswd_server|search(':') %}{{ value.kpasswd_server }}{% else %}{{ value.kpasswd_server }}:{{ kerberos_client__krb_kpasswd_port }}{% endif %}
+{%   endif %}
+
 {%   for key, value in value|dictsort %}
-{%     if key not in ['master_kdc', 'kdc', 'admin_server'] %}
+{%     if key not in ['master_kdc', 'kdc', 'admin_server', 'kpasswd_server'] %}
     {{ key }} = {{ value }}
 {%     endif %}
 {%   endfor %}
