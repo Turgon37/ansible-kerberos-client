@@ -13,12 +13,14 @@
   failed_when: _kerberos_client__keytab_principal_status.rc == 2
   check_mode: no
 
-- debug: var=_kerberos_client__keytab_principal_status
 ## Keytab deployement
 - name: Fetch new Keytab from remote KDC
   include_tasks: deploy-keytab-from-remote-kdc.yml
-  when: (not _kerberos_client__keytab_status.stat.exists) and
-          kerberos_client__keytab_deploy_type == 'remote'
+  when: kerberos_client__keytab_deploy_type == 'remote' and
+        (
+          (not _kerberos_client__keytab_status.stat.exists) or
+          _kerberos_client__keytab_principal_status.rc == 0
+        )
 
 - name: Ensure default include directory exists
   file:

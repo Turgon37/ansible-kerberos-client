@@ -7,6 +7,11 @@ includedir {{ kerberos_client__include_dir }}
 includedir {{ dir }}
 {% endfor %}
 
+[logging]
+{% for key, value in kerberos_client__logging|dictsort %}
+  {{ key }} = {{ value }}
+{% endfor %}
+
 [libdefaults]
 {% for key, value in kerberos_client__defaults_merged|dictsort %}
   {{ key }} = {{ value }}

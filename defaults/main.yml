@@ -21,7 +21,10 @@ kerberos_client__realms: {}
 kerberos_client__defaults: {}
 # Default values pre-configured per distributions
 kerberos_client__defaults_distribution: {}
+# List of domain mapping
 kerberos_client__domains: {}
+# List of logging rules
+kerberos_client__logging: {}
 
 # Merged dict of defaults configurations items
 kerberos_client__defaults_merged: '{{ kerberos_client__defaults_distribution|
