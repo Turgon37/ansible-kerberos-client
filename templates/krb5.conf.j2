@@ -18,25 +18,25 @@ includedir {{ dir }}
 {% endfor %}
 
 [realms]
-{% for key, value in kerberos_client__realms|dictsort %}
-  {{ key|upper }} = {
-{%   for kdc in ([value.kdc] if value.kdc is string else value.kdc) %}
+{% for realm, parameters in kerberos_client__realms|dictsort %}
+  {{ realm|upper }} = {
+{%   for kdc in ([parameters.kdc] if parameters.kdc is string else parameters.kdc) %}
     kdc = {% if kdc|search(':') %}{{ kdc }}{% else %}{{ kdc }}:{{ kerberos_client__krb_port }}{% endif %}
 {%   endfor %}
 
-{%   if value.master_kdc is defined %}
-    master_kdc = {% if value.master_kdc|search(':') %}{{ value.master_kdc }}{% else %}{{ value.master_kdc }}:{{ kerberos_client__krb_port }}{% endif %}
+{%   if parameters.master_kdc is defined %}
+    master_kdc = {% if parameters.master_kdc|search(':') %}{{ parameters.master_kdc }}{% else %}{{ parameters.master_kdc }}:{{ kerberos_client__krb_port }}{% endif %}
 {%   endif %}
 
-{%   if value.admin_server is defined %}
-    admin_server = {% if value.admin_server|search(':') %}{{ value.admin_server }}{% else %}{{ value.admin_server }}:{{ kerberos_client__krb_admin_port }}{% endif %}
+{%   if parameters.admin_server is defined %}
+    admin_server = {% if parameters.admin_server|search(':') %}{{ parameters.admin_server }}{% else %}{{ parameters.admin_server }}:{{ kerberos_client__krb_admin_port }}{% endif %}
 {%   endif %}
 
-{%   if value.kpasswd_server is defined %}
-    kpasswd_server = {% if value.kpasswd_server|search(':') %}{{ value.kpasswd_server }}{% else %}{{ value.kpasswd_server }}:{{ kerberos_client__krb_kpasswd_port }}{% endif %}
+{%   if parameters.kpasswd_server is defined %}
+    kpasswd_server = {% if parameters.kpasswd_server|search(':') %}{{ parameters.kpasswd_server }}{% else %}{{ parameters.kpasswd_server }}:{{ kerberos_client__krb_kpasswd_port }}{% endif %}
 {%   endif %}
 
-{%   for key, value in value|dictsort %}
+{%   for key, value in parameters|dictsort %}
 {%     if key not in ['master_kdc', 'kdc', 'admin_server', 'kpasswd_server'] %}
     {{ key }} = {{ value }}
 {%     endif %}
@@ -48,4 +48,15 @@ includedir {{ dir }}
 {% for domain, realm in kerberos_client__domains|dictsort %}
   .{{ domain }} = {{ realm }}
   {{ domain }} = {{ realm }}
+{% endfor %}
+
+[dbmodules]
+{% for realm, parameters in kerberos_client__dbmodules|dictsort %}
+{%   if parameters.keys()|length > 0 %}
+  {{ realm|upper }} = {
+{%     for key, value in parameters|dictsort %}
+    {{ key }} = {{ value }}
+{%     endfor %}
+  }
+{%   endif %}
 {% endfor %}

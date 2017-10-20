@@ -19,7 +19,7 @@
   when: kerberos_client__keytab_deploy_type == 'remote' and
         (
           (not _kerberos_client__keytab_status.stat.exists) or
-          _kerberos_client__keytab_principal_status.rc == 0
+          _kerberos_client__keytab_principal_status.rc == 1
         )
 
 - name: Ensure default include directory exists
