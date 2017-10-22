@@ -3,6 +3,7 @@
 - name: Generate new keytab on remote KDC
   shell: '{{ kerberos_client__keytab_deploy_remote_genkey_command }}'
   delegate_to: "{{ kerberos_client__keytab_deploy_remote_host }}"
+  no_log: kerberos_client__keytab_deploy_remote_genkey_nolog
 
 - name: Fetch keytab from remote KDC
   fetch:
