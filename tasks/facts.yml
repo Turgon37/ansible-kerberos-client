@@ -1,0 +1,9 @@
+---
+
+- name: Insert custom fact file
+  template:
+    src:   kerberos.py.j2
+    dest:  "{{ facts__dir|d('/etc/ansible/facts.d') }}/kerberos.fact"
+    owner: root
+    group: root
+    mode:  0755

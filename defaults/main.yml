@@ -1,6 +1,12 @@
 ---
 # defaults file for kerberos-client
 
+# Simple placeholder to allow other roles to detect this role
+kerberos_client__role: True
+
+# Enable facts deploiement
+kerberos_client__facts: True
+
 # List of packages to install
 kerberos_client__packages_names: []
 

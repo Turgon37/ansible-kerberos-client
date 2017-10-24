@@ -20,3 +20,6 @@
 
 - import_tasks: configure.yml
   tags: ['kerberos-client', 'kerberos-client-configure']
+
+- include_tasks: facts.yml
+  when: kerberos_client__facts
