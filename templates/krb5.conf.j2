@@ -46,7 +46,6 @@ includedir {{ dir }}
 
 [domain_realm]
 {% for domain, realm in kerberos_client__domains|dictsort %}
-  .{{ domain }} = {{ realm }}
   {{ domain }} = {{ realm }}
 {% endfor %}
 
