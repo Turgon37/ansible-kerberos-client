@@ -22,4 +22,4 @@
   tags: ['kerberos-client', 'kerberos-client-configure']
 
 - include_tasks: facts.yml
-  when: kerberos_client__facts
+  when: kerberos_client__facts|bool
