@@ -34,8 +34,8 @@
     for i in `seq {{ _kerberos_client__keytab_count_unknown_encryption.stdout }}`; do
       [ -n "${id}" ] && rm -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${id}"
       id=`klist -k '{{ kerberos_client__keytab_path }}' -e | grep --max-count=1 --extended-regexp '\(etype [0-9]+\)' | awk '{print $1}'`;
-      [ -n "${id}" ] && ( /usr/bin/env echo -e "rkt {{ kerberos_client__keytab_path }}\nlist -e\ndelent ${id}\nlist -e\nwkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${id}\nquit" | ktutil )
-    done
+      [ -n "${id}" ] && ( /usr/bin/env echo -e "rkt {{ kerberos_client__keytab_path }}\nlist -e\ndelent ${id}\nlist -e\nwkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${id}\nquit" | ktutil );
+    done;
     mv '{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${id}' '{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}'
   when: _kerberos_client__keytab_count_unknown_encryption.stdout|int > 0
 
