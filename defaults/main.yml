@@ -13,6 +13,10 @@ kerberos_client__packages_names: []
 kerberos_client__config_file: /etc/krb5.conf
 kerberos_client__keytab_path: /etc/krb5.keytab
 
+# The pattenr/ or file name prefix to use to generate temporary
+# keytab during sanitization
+kerberos_client__keytab_sanitize_tmp_file_pattern: /tmp/keytab.sanitized
+
 # Default include directory
 kerberos_client__include_dir: /etc/krb5.conf.d
 # Additionnals include directory
