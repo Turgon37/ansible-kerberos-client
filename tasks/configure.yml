@@ -32,7 +32,7 @@
 - name: Sanitize the keytab from unknown encryption
   shell: >
     for i in `seq {{ _kerberos_client__keytab_count_unknown_encryption.stdout }}`; do
-      id=klist -k {{ kerberos_client__keytab_path }} -e | grep --max-count=1 --extended-regexp '\(etype [0-9]+\)' | awk '{print $1}';
+      id=`klist -k {{ kerberos_client__keytab_path }} -e | grep --max-count=1 --extended-regexp '\(etype [0-9]+\)' | awk '{print $1}'`;
       [ -n "$id" ] && ( echo -e "rkt {{ kerberos_client__keytab_path }}\nlist -e\ndelent ${id}\nlist -e\nwkt /root/keytab.sanitized\nquit" | ktutil )
     done
   when: _kerberos_client__keytab_count_unknown_encryption.stdout|int > 0
