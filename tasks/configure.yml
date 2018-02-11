@@ -40,6 +40,7 @@
       [ -n "${id}" ] && ( /usr/bin/env echo -e "rkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}\ndelent ${id}\nlist -e\nwkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((${i}+1))\nquit" | ktutil );
       rm -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}";
     done;
+    [ $(klist -k "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((${i}+1))" | grep --count --quiet '{{ kerberos_client__keytab_principal }}') -gt 0 ] || exit 1;
     mv "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((${i}+1))" '{{ kerberos_client__keytab_path }}'
   when: _kerberos_client__keytab_count_unknown_encryption.stdout|int > 0
 
