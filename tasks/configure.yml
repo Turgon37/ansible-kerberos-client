@@ -2,16 +2,16 @@
 
 - name: Check presence of keytab
   stat:
-    path: '{{ kerberos_client__keytab }}'
+    path: '{{ kerberos_client__keytab_path }}'
   register: _kerberos_client__keytab_status
-  check_mode: no
+  check_mode: False
 
 - name: Check presence of principal in keytab
-  shell: klist -k {{ kerberos_client__keytab }} | grep --extended-regexp '^\s*[0-9]+\s*{{ kerberos_client__keytab_principal }}'
+  shell: klist -k {{ kerberos_client__keytab_path }} | grep --extended-regexp '^\s*[0-9]+\s*{{ kerberos_client__keytab_principal }}'
   register: _kerberos_client__keytab_principal_status
-  changed_when: false
+  changed_when: False
   failed_when: _kerberos_client__keytab_principal_status.rc == 2
-  check_mode: no
+  check_mode: False
 
 ## Keytab deployement
 - name: Fetch new Keytab from remote KDC
@@ -21,6 +21,13 @@
           (not _kerberos_client__keytab_status.stat.exists) or
           _kerberos_client__keytab_principal_status.rc == 1
         )
+
+- name: Ensure permissions on host keytab file
+  file:
+    path:  '{{ kerberos_client__keytab_path }}'
+    owner: root
+    group: root
+    mode:  0600
 
 - name: Ensure default include directory exists
   file:

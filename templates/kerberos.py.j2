@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 
-keytab_path = '{{ kerberos_client__keytab }}'
+keytab_path = '{{ kerberos_client__keytab_path }}'
 
 content=dict({
     'principals': []

@@ -11,7 +11,7 @@ kerberos_client__facts: True
 kerberos_client__packages_names: []
 
 kerberos_client__config_file: /etc/krb5.conf
-kerberos_client__keytab: /etc/krb5.keytab
+kerberos_client__keytab_path: /etc/krb5.keytab
 
 # Default include directory
 kerberos_client__include_dir: /etc/krb5.conf.d
