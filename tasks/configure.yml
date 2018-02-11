@@ -22,6 +22,17 @@
           _kerberos_client__keytab_principal_status.rc == 1
         )
 
+- name: Check keytab for bad keys
+  shell: klist -k {{ kerberos_client__keytab_path }} -e | grep --extended-regexp '\(etype [0-9]+\)'
+  register: _kerberos_client__keytab_has_unknown_encryption
+  changed_when: False
+  failed_when: _kerberos_client__keytab_has_unknown_encryption.rc == 2
+  check_mode: False
+
+- name: Sanitize the keytab from unknown encryption
+  include_tasks: sanitize-keytab-from-unknown-encryption.yml
+  when: _kerberos_client__keytab_has_unknown_encryption.rc == 0
+
 - name: Ensure permissions on host keytab file
   file:
     path:  '{{ kerberos_client__keytab_path }}'
