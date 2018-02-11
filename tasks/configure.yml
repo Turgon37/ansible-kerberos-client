@@ -31,13 +31,14 @@
 
 - name: Sanitize the keytab from unknown encryption
   shell: >
-    rm -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.1"
+    rm -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.1";
     for i in `seq {{ _kerberos_client__keytab_count_unknown_encryption.stdout }}`; do
-      [ -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}" ] || cp '{{ kerberos_client__keytab_path }}' "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}"
-      rm -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((${i}+1))"
-      id=`klist -k '{{ kerberos_client__keytab_path }}' -e | grep --max-count=1 --extended-regexp '\(etype [0-9]+\)' | awk '{print $1}'`
-      klist -k "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}" -e
-      [ -n "${id}" ] && ( /usr/bin/env echo -e "rkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}\ndelent ${id}\nlist -e\nwkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((${i}+1))\nquit" | ktutil )
+      [ -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}" ] || cp '{{ kerberos_client__keytab_path }}' "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}";
+      rm -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((${i}+1))";
+      id=`klist -k '{{ kerberos_client__keytab_path }}' -e | grep --max-count=1 --extended-regexp '\(etype [0-9]+\)' | awk '{print $1}'`;
+      klist -k "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}" -e;
+      [ -n "${id}" ] && ( /usr/bin/env echo -e "rkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}\ndelent ${id}\nlist -e\nwkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((${i}+1))\nquit" | ktutil );
+      rm -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}";
     done;
     mv "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((${i}+1))" '{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}'
   when: _kerberos_client__keytab_count_unknown_encryption.stdout|int > 0
