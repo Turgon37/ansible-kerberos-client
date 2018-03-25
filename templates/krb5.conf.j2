@@ -21,19 +21,19 @@ includedir {{ dir }}
 {% for realm, parameters in kerberos_client__realms|dictsort %}
   {{ realm|upper }} = {
 {%   for kdc in ([parameters.kdc] if parameters.kdc is string else parameters.kdc) %}
-    kdc = {% if kdc|search(':') %}{{ kdc }}{% else %}{{ kdc }}:{{ kerberos_client__krb_port }}{% endif %}
+    kdc = {% if kdc is search(':') %}{{ kdc }}{% else %}{{ kdc }}:{{ kerberos_client__krb_port }}{% endif %}
 {%   endfor %}
 
 {%   if parameters.master_kdc is defined %}
-    master_kdc = {% if parameters.master_kdc|search(':') %}{{ parameters.master_kdc }}{% else %}{{ parameters.master_kdc }}:{{ kerberos_client__krb_port }}{% endif %}
+    master_kdc = {% if parameters.master_kdc is search(':') %}{{ parameters.master_kdc }}{% else %}{{ parameters.master_kdc }}:{{ kerberos_client__krb_port }}{% endif %}
 {%   endif %}
 
 {%   if parameters.admin_server is defined %}
-    admin_server = {% if parameters.admin_server|search(':') %}{{ parameters.admin_server }}{% else %}{{ parameters.admin_server }}:{{ kerberos_client__krb_admin_port }}{% endif %}
+    admin_server = {% if parameters.admin_server is search(':') %}{{ parameters.admin_server }}{% else %}{{ parameters.admin_server }}:{{ kerberos_client__krb_admin_port }}{% endif %}
 {%   endif %}
 
 {%   if parameters.kpasswd_server is defined %}
-    kpasswd_server = {% if parameters.kpasswd_server|search(':') %}{{ parameters.kpasswd_server }}{% else %}{{ parameters.kpasswd_server }}:{{ kerberos_client__krb_kpasswd_port }}{% endif %}
+    kpasswd_server = {% if parameters.kpasswd_server is search(':') %}{{ parameters.kpasswd_server }}{% else %}{{ parameters.kpasswd_server }}:{{ kerberos_client__krb_kpasswd_port }}{% endif %}
 {%   endif %}
 
 {%   for key, value in parameters|dictsort %}
