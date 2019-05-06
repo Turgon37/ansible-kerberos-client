@@ -34,6 +34,13 @@ kerberos_client__domains: {}
 # List of logging rules
 kerberos_client__logging: {}
 
+# dbmodule per realm
+kerberos_client__dbmodules: {}
+
+# kerberos plugins
+kerberos_client__plugins: {}
+
+
 # Merged dict of defaults configurations items
 kerberos_client__defaults_merged: '{{ kerberos_client__defaults_distribution|
                                         combine(kerberos_client__defaults) }}'
