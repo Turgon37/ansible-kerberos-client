@@ -1,0 +1,9 @@
+---
+
+- name: Setup krb5.conf
+  template:
+    src:   krb5.conf.j2
+    dest:  '{{ kerberos_client__config_file }}'
+    owner: root
+    group: root
+    mode:  0644

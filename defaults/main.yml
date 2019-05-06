@@ -1,0 +1,25 @@
+---
+# defaults file for kerberos-client
+
+# List of packages to install
+kerberos_client__packages_names: []
+
+kerberos_client__config_file: /etc/krb5.conf
+kerberos_client__keytab: /etc/krb5.keytab
+
+kerberos_client__include_dirs: []
+
+kerberos_client__realms: {}
+kerberos_client__defaults: {}
+# Default values pre-configured per distributions
+kerberos_client__defaults_distribution: {}
+kerberos_client__domains: {}
+
+# Merged dict of defaults configurations items
+kerberos_client__defaults_merged: '{{ kerberos_client__defaults_distribution|
+                                        combine(kerberos_client__defaults) }}'
+
+# Default port of Kerberos service on KDC
+kerberos_client__krb_port: 88
+# Default port of Kerberos admin service on KDC
+kerberos_client__krb_admin_port: 749

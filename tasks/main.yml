@@ -1,0 +1,22 @@
+---
+# tasks file for kerberos-client
+
+- name: Include the OS specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+        - "defaults.yml"
+      skip: true
+  tags: ['always']
+
+- import_tasks: init.yml
+  tags: ['always']
+
+- import_tasks: install.yml
+  tags: ['kerberos-client', 'kerberos-client-install']
+
+- import_tasks: configure.yml
+  tags: ['kerberos-client', 'kerberos-client-configure']

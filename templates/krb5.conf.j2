@@ -1,0 +1,44 @@
+#
+# {{ ansible_managed }}
+#
+
+{% for dir in kerberos_client__include_dirs %}
+includedir {{ dir }}
+{% endfor %}
+
+[libdefaults]
+{% for key, value in kerberos_client__defaults_merged|dictsort %}
+  {{ key }} = {{ value }}
+{% endfor %}
+
+[realms]
+{% for key, value in kerberos_client__realms|dictsort %}
+  {{ key|upper }} = {
+{%   for kdc in ([value.kdc] if value.kdc is string else value.kdc) %}
+    kdc = {% if kdc|search(':') %}{{ kdc }}{% else %}{{ kdc }}:{{ kerberos_client__krb_port }}{% endif %}
+{%   endfor %}
+
+{%   if value.master_kdc is defined %}
+    master_kdc = {% if value.master_kdc|search(':') %}{{ value.master_kdc }}{% else %}{{ value.master_kdc }}:{{ kerberos_client__krb_port }}{% endif %}
+{%   endif %}
+
+{%   if value.admin_server is defined %}
+    admin_server = {% if value.admin_server|search(':') %}{{ value.admin_server }}{% else %}{{ value.admin_server }}:{{ kerberos_client__krb_admin_port }}{% endif %}
+{%   endif %}
+
+{%   for key, value in value|dictsort %}
+{%     if key not in ['master_kdc', 'kdc', 'admin_server'] %}
+    {{ key }} = {{ value }}
+{%     endif %}
+{%   endfor %}
+  }
+{% endfor %}
+        auth_to_local = RULE:[1:$1]
+        auth_to_local = RULE:[2:$1]
+        auth_to_local = DEFAULT
+
+[domain_realm]
+{% for domain, realm in kerberos_client__domains|dictsort %}
+  .{{ domain }} = {{ realm }}
+  {{ domain }} = {{ realm }}
+{% endfor %}

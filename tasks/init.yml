@@ -1,0 +1,8 @@
+---
+### ASSERTION
+
+- name: Assert realms configuration
+  assert:
+    that:
+      - item.value.kdc is defined and ( item.value.kdc is string or item.value.kdc is iterable )
+  with_dict: '{{ kerberos_client__realms }}'
