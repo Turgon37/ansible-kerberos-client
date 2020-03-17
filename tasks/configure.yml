@@ -4,32 +4,34 @@
   stat:
     path: '{{ kerberos_client__keytab_path }}'
   register: _kerberos_client__keytab_status
-  check_mode: False
 
 - name: Check presence of principal in keytab
-  shell: |
-    klist -k {{ kerberos_client__keytab_path }} | grep --extended-regexp '^\s*[0-9]+\s*{{ kerberos_client__keytab_principal }}'
+  shell: >-
+    klist -k {{ kerberos_client__keytab_path }}
+    | grep --extended-regexp '^\s*[0-9]+\s*{{ kerberos_client__keytab_principal }}'
   register: _kerberos_client__keytab_principal_status
-  changed_when: False
+  changed_when: false
   failed_when: _kerberos_client__keytab_principal_status.rc == 2
-  check_mode: False
+  check_mode: false
 
 ## Keytab deployement
+
 - name: Fetch new Keytab from remote KDC
   include_tasks: deploy-keytab-from-remote-kdc.yml
-  when: kerberos_client__keytab_deploy_type == 'remote' and
-        (
-          (not _kerberos_client__keytab_status.stat.exists) or
-          _kerberos_client__keytab_principal_status.rc == 1
-        )
+  when: kerberos_client__keytab_deploy_type == 'remote'
+    and (
+      (not _kerberos_client__keytab_status.stat.exists)
+      or _kerberos_client__keytab_principal_status.rc == 1
+    )
 
 - name: Check keytab for bad keys
-  shell: |
-    klist -k {{ kerberos_client__keytab_path }} -e | grep --count --extended-regexp '\(etype [0-9]+\)'
+  shell: >-
+    klist -k {{ kerberos_client__keytab_path }} -e
+    | grep --count --extended-regexp '\(etype [0-9]+\)'
   register: _kerberos_client__keytab_count_unknown_encryption
-  changed_when: False
+  changed_when: false
   failed_when: _kerberos_client__keytab_count_unknown_encryption.rc == 2
-  check_mode: False
+  check_mode: false
 
 - name: Sanitize the keytab from unknown encryption
   shell: |
@@ -57,23 +59,23 @@
 
 - name: Ensure permissions on host keytab file
   file:
-    path:  '{{ kerberos_client__keytab_path }}'
+    path: '{{ kerberos_client__keytab_path }}'
     owner: root
     group: root
-    mode:  0600
+    mode: 0600
 
 - name: Ensure default include directory exists
   file:
-    path:  '{{ kerberos_client__include_dir }}'
+    path: '{{ kerberos_client__include_dir }}'
     owner: root
     group: root
-    mode:  0755
+    mode: 0755
     state: directory
 
 - name: Setup krb5.conf
   template:
-    src:   krb5.conf.j2
-    dest:  '{{ kerberos_client__config_file }}'
+    src: krb5.conf.j2
+    dest: '{{ kerberos_client__config_file }}'
     owner: root
     group: root
-    mode:  0644
+    mode: 0644

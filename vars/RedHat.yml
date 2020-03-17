@@ -1,7 +1,7 @@
 ---
 
 kerberos_client__packages_names:
-  - krb5-workstation 
+  - krb5-workstation
 
 kerberos_client__defaults_distribution:
   default_ccache_name: 'KEYRING:persistent:%{uid}'

@@ -2,16 +2,16 @@
 
 - name: Create custom fact directory
   file:
-    path:  "{{ facts__dir|d('/etc/ansible/facts.d') }}"
+    path: "{{ facts__dir|d('/etc/ansible/facts.d') }}"
     owner: root
     group: root
-    mode:  0755
+    mode: 0755
     state: directory
 
 - name: Insert custom fact file
   template:
-    src:   kerberos.fact.py.j2
-    dest:  "{{ facts__dir|d('/etc/ansible/facts.d') }}/kerberos.fact"
+    src: kerberos.fact.py.j2
+    dest: "{{ facts__dir|d('/etc/ansible/facts.d') }}/kerberos.fact"
     owner: root
     group: root
-    mode:  0755
+    mode: 0755
