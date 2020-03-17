@@ -1,8 +1,24 @@
 ---
 ### ASSERTION
 
+- name: Assert role configuration
+  assert:
+    that:
+      - kerberos_client__keytab_principal is defined
+      - kerberos_client__keytab_deploy_method in ['none', 'remote']
+      - kerberos_client__keytab_deploy_method != 'remote'
+        or (
+          kerberos_client__keytab_deploy_remote_host is defined
+          and kerberos_client__keytab_deploy_tmp_file is defined
+          and kerberos_client__keytab_deploy_remote_genkey_command is defined
+        )
+
 - name: Assert realms configuration
   assert:
     that:
-      - item.value.kdc is defined and ( item.value.kdc is string or item.value.kdc is iterable )
+      - item.value.kdc is defined
+        and (
+          item.value.kdc is string
+          or item.value.kdc is iterable
+        )
   with_dict: '{{ kerberos_client__realms }}'

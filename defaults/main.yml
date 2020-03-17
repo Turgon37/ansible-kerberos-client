@@ -11,7 +11,7 @@ kerberos_client__facts: true
 kerberos_client__packages_names: []
 
 
-### KERBEROS CONFIGURATION
+### KERBEROS SERVICE CONFIGURATION
 # ---------------------------------------
 
 # main client configuration
@@ -25,16 +25,37 @@ kerberos_client__include_dir: /etc/krb5.conf.d
 # Additionnals include directory
 kerberos_client__include_dirs: []
 
-
 # The pattern or file name prefix to use to generate temporary
 # keytab during sanitization
 kerberos_client__keytab_sanitize_tmp_file_pattern: /tmp/keytab.sanitized
 
-kerberos_client__keytab_deploy_type: remote
-kerberos_client__keytab_deploy_tmp_file: '/tmp/{{ inventory_hostname }}.keytab'
-# kerberos_client__keytab_deploy_remote_genkey_command
+# Choose the way the role will fetch the keytab
+# Available : none remote
+#   none : the keytab will not be managed
+#   remote : ansible will contact a remote kdc to produce the keytab (see variables below)
+kerberos_client__keytab_deploy_method: none
+
+## Theses variable are only relevant if the deploy method is set to remote
+
+# Define the command that will produce the keytab on the remote KDC
+# kerberos_client__keytab_deploy_remote_genkey_command:
+
+# If yes, the remote command on KDC will not be logged
 kerberos_client__keytab_deploy_remote_genkey_nolog: false
+
+# Internal variable use to store the temporary file during transfert from KDC to initial host
+kerberos_client__keytab_deploy_tmp_file: '/tmp/{{ inventory_hostname }}.keytab'
+
+# The hostname to which delegate the keytab creation
 # kerberos_client__keytab_deploy_remote_host:
+
+
+### KERBEROS CONFIGURATION
+# ---------------------------------------
+
+# Host principal used to produce and check host keytab
+# kerberos_client__keytab_principal: 'host/{{ ansible_fqdn }}@EXAMPLE.COM'
+
 
 kerberos_client__realms: {}
 kerberos_client__defaults: {}

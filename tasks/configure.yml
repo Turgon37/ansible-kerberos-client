@@ -16,53 +16,58 @@
 
 ## Keytab deployement
 
-- name: Fetch new Keytab from remote KDC
+- name: Fetch new host keytab from remote KDC
   include_tasks: deploy-keytab-from-remote-kdc.yml
-  when: kerberos_client__keytab_deploy_type == 'remote'
+  when: kerberos_client__keytab_deploy_method == 'remote'
     and (
       (not _kerberos_client__keytab_status.stat.exists)
       or _kerberos_client__keytab_principal_status.rc == 1
     )
 
-- name: Check keytab for bad keys
-  shell: >-
-    klist -k {{ kerberos_client__keytab_path }} -e
-    | grep --count --extended-regexp '\(etype [0-9]+\)'
-  register: _kerberos_client__keytab_count_unknown_encryption
-  changed_when: false
-  failed_when: _kerberos_client__keytab_count_unknown_encryption.rc == 2
-  check_mode: false
+- name: Apply treatments to host keytab
+  block:
 
-- name: Sanitize the keytab from unknown encryption
-  shell: |
-    rm -fv '{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.1';
-    # loop for each bad encryption line, produce new keytab with all lines without the bad ones
-    for i in `seq {{ _kerberos_client__keytab_count_unknown_encryption.stdout|int }}`; do
-      # init the loop with the original keytab
-      [ -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}" ] || cp '{{ kerberos_client__keytab_path }}' "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}";
-      # remove previous version of temporary destination file
-      rm -vf "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((i+1))";
-      # get the first id of a line with bad encoding
-      id=`klist -k '{{ kerberos_client__keytab_path }}' -e | grep --max-count=1 --extended-regexp '\(etype [0-9]+\)' | awk '{print $1}'`;
-      # print the content of the temporary keytab for debugging purpose
-      klist -k "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}" -e || true;
-      # write a new keytab with bad encryption lines
-      [ -n "${id}" ] && ( /usr/bin/env echo -e "rkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}\ndelent ${id}\nlist -e\nwkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((i+1))\nquit" | ktutil );
-      # remove file from previous loop iteration
-      rm -vf "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}";
-    done;
-    # ensure there is no any bad encryption key before to apply new keytab
-    [ $(klist -k "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((i+1))" | grep --count --extended-regexp '\(etype [0-9]+\)') -eq 0 ] || exit 1;
-    # replace the main keytab with the result of the process
-    mv -v "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((i+1))" '{{ kerberos_client__keytab_path }}'
-  when: _kerberos_client__keytab_count_unknown_encryption.stdout|int > 0
+    - name: Check keytab for bad keys
+      shell: >-
+        klist -k {{ kerberos_client__keytab_path }} -e
+        | grep --count --extended-regexp '\(etype [0-9]+\)'
+      register: _kerberos_client__keytab_count_unknown_encryption
+      changed_when: false
+      failed_when: _kerberos_client__keytab_count_unknown_encryption.rc == 2
+      check_mode: false
 
-- name: Ensure permissions on host keytab file
-  file:
-    path: '{{ kerberos_client__keytab_path }}'
-    owner: root
-    group: root
-    mode: 0600
+    - name: Sanitize the keytab from unknown encryption
+      shell: |
+        rm -fv '{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.1';
+        # loop for each bad encryption line, produce new keytab with all lines without the bad ones
+        for i in `seq {{ _kerberos_client__keytab_count_unknown_encryption.stdout|int }}`; do
+          # init the loop with the original keytab
+          [ -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}" ] || cp '{{ kerberos_client__keytab_path }}' "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}";
+          # remove previous version of temporary destination file
+          rm -vf "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((i+1))";
+          # get the first id of a line with bad encoding
+          id=`klist -k '{{ kerberos_client__keytab_path }}' -e | grep --max-count=1 --extended-regexp '\(etype [0-9]+\)' | awk '{print $1}'`;
+          # print the content of the temporary keytab for debugging purpose
+          klist -k "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}" -e || true;
+          # write a new keytab with bad encryption lines
+          [ -n "${id}" ] && ( /usr/bin/env echo -e "rkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}\ndelent ${id}\nlist -e\nwkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((i+1))\nquit" | ktutil );
+          # remove file from previous loop iteration
+          rm -vf "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}";
+        done;
+        # ensure there is no any bad encryption key before to apply new keytab
+        [ $(klist -k "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((i+1))" | grep --count --extended-regexp '\(etype [0-9]+\)') -eq 0 ] || exit 1;
+        # replace the main keytab with the result of the process
+        mv -v "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((i+1))" '{{ kerberos_client__keytab_path }}'
+      when: _kerberos_client__keytab_count_unknown_encryption.stdout|int > 0
+
+    - name: Ensure permissions on host keytab file
+      file:
+        path: '{{ kerberos_client__keytab_path }}'
+        owner: root
+        group: root
+        mode: 0600
+
+  when: kerberos_client__keytab_deploy_method != 'none'
 
 - name: Ensure default include directory exists
   file:
