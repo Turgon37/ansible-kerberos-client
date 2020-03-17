@@ -1,0 +1,7 @@
+---
+extends: default
+ignore: |
+  .travis.yml
+
+rules:
+  line-length: disable
