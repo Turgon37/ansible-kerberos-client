@@ -6,6 +6,7 @@
   register: _kerberos_client__keytab_status
 
 - name: Check presence of principal in keytab
+  # noqa 306
   shell: >-
     klist -k {{ kerberos_client__keytab_path }}
     | grep --extended-regexp '^\s*[0-9]+\s*{{ kerberos_client__keytab_principal }}'
@@ -37,12 +38,14 @@
       check_mode: false
 
     - name: Sanitize the keytab from unknown encryption
+      # noqa 302
       shell: |
         rm -fv '{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.1';
         # loop for each bad encryption line, produce new keytab with all lines without the bad ones
         for i in `seq {{ _kerberos_client__keytab_count_unknown_encryption.stdout|int }}`; do
           # init the loop with the original keytab
-          [ -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}" ] || cp '{{ kerberos_client__keytab_path }}' "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}";
+          [ -f "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}" ]
+            || cp '{{ kerberos_client__keytab_path }}' "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}";
           # remove previous version of temporary destination file
           rm -vf "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((i+1))";
           # get the first id of a line with bad encoding
@@ -50,7 +53,14 @@
           # print the content of the temporary keytab for debugging purpose
           klist -k "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}" -e || true;
           # write a new keytab with bad encryption lines
-          [ -n "${id}" ] && ( /usr/bin/env echo -e "rkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}\ndelent ${id}\nlist -e\nwkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((i+1))\nquit" | ktutil );
+          [ -n "${id}" ]
+            && (
+              (
+                /usr/bin/env echo "rkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}"
+                /usr/bin/env echo "delent ${id}\nlist -e"
+                /usr/bin/env echo "wkt {{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.$((i+1))"
+                /usr/bin/env echo "quit"
+              ) | ktutil );
           # remove file from previous loop iteration
           rm -vf "{{ kerberos_client__keytab_sanitize_tmp_file_pattern }}.${i}";
         done;
