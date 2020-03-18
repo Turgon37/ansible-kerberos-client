@@ -7,10 +7,10 @@
 
 - name: Fetch keytab from remote KDC
   fetch:
-    src:             '{{ kerberos_client__keytab_deploy_tmp_file }}'
-    dest:            '{{ kerberos_client__keytab_deploy_tmp_file }}'
-    flat:            yes
-    fail_on_missing: yes
+    src: '{{ kerberos_client__keytab_deploy_tmp_file }}'
+    dest: '{{ kerberos_client__keytab_deploy_tmp_file }}'
+    flat: true
+    fail_on_missing: true
   delegate_to: '{{ kerberos_client__keytab_deploy_remote_host }}'
 
 - name: Secure erase keytab on remote KDC
@@ -19,7 +19,7 @@
 
 - name: Copy keytab to final host
   copy:
-    src:  '{{ kerberos_client__keytab_deploy_tmp_file }}'
+    src: '{{ kerberos_client__keytab_deploy_tmp_file }}'
     dest: '{{ kerberos_client__keytab_path }}'
 
 - name: Secure erase keytab on Ansible executor

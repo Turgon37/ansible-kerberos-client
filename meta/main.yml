@@ -1,4 +1,6 @@
+---
 galaxy_info:
+  role_name: kerberos_client
   author: Pierre GINDRAUD
   description: This role configure this host as a Kerberos client
   license: MIT
@@ -6,11 +8,13 @@ galaxy_info:
   platforms:
     - name: Debian
       versions:
-        - 9
-        - 8
+        - jessie
+        - stretch
+        - buster
     - name: CentOS
       versions:
         - 7
-  galaxy_tags: []
+  galaxy_tags:
+    - kerberos
 
 dependencies: []

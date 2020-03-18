@@ -1,0 +1,10 @@
+---
+- name: Run role
+  hosts: all
+  any_errors_fatal: true
+  tasks:
+    - name: "Include turgon37.kerberos_client"
+      include_role:
+        name: ansible-kerberos-client
+      vars:
+        kerberos_client__keytab_principal: 'host/{{ ansible_fqdn }}@EXAMPLE.COM'
