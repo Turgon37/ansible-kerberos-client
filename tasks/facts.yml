@@ -15,7 +15,7 @@
 
 - name: Insert custom fact file
   template:
-    src: kerberos.fact.py.j2
+    src: kerberos.facts.py.j2
     dest: "{{ facts__dir|d('/etc/ansible/facts.d') }}/kerberos_client.fact"
     owner: root
     group: root
